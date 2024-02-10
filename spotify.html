@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.433">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>spotify</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="spotify_files/libs/clipboard/clipboard.min.js"></script>
+<script src="spotify_files/libs/quarto-html/quarto.js"></script>
+<script src="spotify_files/libs/quarto-html/popper.min.js"></script>
+<script src="spotify_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="spotify_files/libs/quarto-html/anchor.min.js"></script>
+<link href="spotify_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="spotify_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="spotify_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="spotify_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="spotify_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">spotify</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="aims" class="level2">
+<h2 class="anchored" data-anchor-id="aims"><strong>Aims</strong></h2>
+<p>In this project we will be looking at a dataset comprised of multiple songs over a period of time gathered from Spotify. We don’t really have any specific aims, just that we want to do some data exploration and see if we can find anything interesting. The dataset was taken from <a href="http://organizeyourmusic.playlistmachinery.com/" class="uri">http://organizeyourmusic.playlistmachinery.com/</a> which is an official site from Spotify.</p>
+</section>
+<section id="data-overview" class="level2">
+<h2 class="anchored" data-anchor-id="data-overview"><strong>Data overview</strong></h2>
+<p>Lets take a look at the first five rows of our dataset</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 15
+   ...1 title artist `top genre`  year   bpm  nrgy  dnce    dB  live   val   dur
+  &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;       &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1     1 Hey,… Train  neo mellow   2010    97    89    67    -4     8    80   217
+2     2 Love… Eminem detroit hi…  2010    87    93    75    -5    52    64   263
+3     3 TiK … Kesha  dance pop    2010   120    84    76    -3    29    71   200
+4     4 Bad … Lady … dance pop    2010   119    92    70    -4     8    71   295
+5     5 Just… Bruno… pop          2010   109    84    64    -5     9    43   221
+6     6 Baby  Justi… canadian p…  2010    65    86    73    -5    11    54   214
+# ℹ 3 more variables: acous &lt;dbl&gt;, spch &lt;dbl&gt;, pop &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<p>As you can see, there are a total of 15 columns. Some notable variables are there is <code>…1</code> which appears to be an indexing column. We have the title, artist and respective genre of the song.</p>
+<p>We also have a <code>year</code> variable, which could be an indication of multiple things. Its important to ask ourselves some questions about what it represents: Was it the year the song was produced? Was it the year this song was entered into this dataset based on some criteria? We’ll get back to answering this very soon.</p>
+<p>We also have a bunch of other columns which appear to be abbreviations of other words. There are some obvious ones since their abbreviated versions are the more popular than their non-abbreviated counter-part (e.g.&nbsp;<code>bpm</code> stands for <strong>beats per minute</strong>). You can probably guess what <code>nrgy</code>, <code>dnce</code>, <code>acous</code> and <code>spch</code> represent.</p>
+<p>However if we want to really dive deep into what each column represents, then we should take a look at the documentation (Hopefully it exists!). It’s always important to read the documentation as it provides useful insight from those who inputted or gathered the data (Thus its reasonable to expect them to know what the column that <strong>they</strong> created represents). Lets take a look at the documentation now!</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="http://organizeyourmusic.playlistmachinery.com/"><img src="data/documentation_var.png" class="img-fluid figure-img"></a></p>
+<figcaption class="figure-caption">Description of each variable of our dataset</figcaption>
+</figure>
+</div>
+<p>So as you can see some of our uncertainties about what a column represents have been answered. For example <code>year</code> does in fact refer to the release year of the song, with some occasional caveats. Also note how a column named <code>Added</code> is being referred to in the documentation but does not exist in our dataset. This is because the site where this data is obtained from allows you to organize your own Spotify songs that you’ve saved. Naturally, as this is a general top 600 or so songs dataset, this column isn’t present. Now lets make sure everything was read in correctly.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(raw_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>spc_tbl_ [603 × 15] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
+ $ ...1     : num [1:603] 1 2 3 4 5 6 7 8 9 10 ...
+ $ title    : chr [1:603] "Hey, Soul Sister" "Love The Way You Lie" "TiK ToK" "Bad Romance" ...
+ $ artist   : chr [1:603] "Train" "Eminem" "Kesha" "Lady Gaga" ...
+ $ top genre: chr [1:603] "neo mellow" "detroit hip hop" "dance pop" "dance pop" ...
+ $ year     : num [1:603] 2010 2010 2010 2010 2010 2010 2010 2010 2010 2010 ...
+ $ bpm      : num [1:603] 97 87 120 119 109 65 120 148 93 126 ...
+ $ nrgy     : num [1:603] 89 93 84 92 84 86 78 76 37 72 ...
+ $ dnce     : num [1:603] 67 75 76 70 64 73 75 52 48 79 ...
+ $ dB       : num [1:603] -4 -5 -3 -4 -5 -5 -4 -6 -8 -4 ...
+ $ live     : num [1:603] 8 52 29 8 9 11 4 12 12 7 ...
+ $ val      : num [1:603] 80 64 71 71 43 54 82 38 14 61 ...
+ $ dur      : num [1:603] 217 263 200 295 221 214 203 225 216 235 ...
+ $ acous    : num [1:603] 19 24 10 0 2 4 0 7 74 13 ...
+ $ spch     : num [1:603] 4 23 14 4 4 14 9 4 3 4 ...
+ $ pop      : num [1:603] 83 82 80 79 78 77 77 77 76 73 ...
+ - attr(*, "spec")=
+  .. cols(
+  ..   ...1 = col_double(),
+  ..   title = col_character(),
+  ..   artist = col_character(),
+  ..   `top genre` = col_character(),
+  ..   year = col_double(),
+  ..   bpm = col_double(),
+  ..   nrgy = col_double(),
+  ..   dnce = col_double(),
+  ..   dB = col_double(),
+  ..   live = col_double(),
+  ..   val = col_double(),
+  ..   dur = col_double(),
+  ..   acous = col_double(),
+  ..   spch = col_double(),
+  ..   pop = col_double()
+  .. )
+ - attr(*, "problems")=&lt;externalptr&gt; </code></pre>
+</div>
+</div>
+<p>Everything seems to be in order here. We may want to change the year to a Date as we don’t want to perform calculations on it. Lets move on to checking for missing values or values that appear to be mistakes.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>raw_data <span class="sc">|&gt;</span> </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="cf">function</span>(x) <span class="fu">sum</span>(<span class="fu">is.na</span>(x))))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 15
+   ...1 title artist `top genre`  year   bpm  nrgy  dnce    dB  live   val   dur
+  &lt;int&gt; &lt;int&gt;  &lt;int&gt;       &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
+1     0     0      0           0     0     0     0     0     0     0     0     0
+# ℹ 3 more variables: acous &lt;int&gt;, spch &lt;int&gt;, pop &lt;int&gt;</code></pre>
+</div>
+</div>
+<p>There are no missing values. Lets look for values that were incorrectly inserted. Generally we can use the <code>View()</code> function to have a quick look at what the largest and smallest values are for certain columns. For example <code>nrgy</code>, <code>dnce</code>, <code>live</code> etc. seem to be only be able to take values in the range 0-100. <code>dB</code> takes only negative values, and <code>bpm</code> and <code>dur</code> are positive values which can go much higher than 100.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>raw_data <span class="sc">|&gt;</span> </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">if_any</span>(<span class="fu">c</span>(nrgy, dnce, live, val, acous, spch, pop), <span class="sc">~</span> . <span class="sc">&lt;=</span> <span class="dv">1</span> <span class="sc">|</span> . <span class="sc">&gt;=</span> <span class="dv">99</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 150 × 15
+    ...1 title      artist `top genre`  year   bpm  nrgy  dnce    dB  live   val
+   &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;  &lt;chr&gt;       &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+ 1     4 Bad Roman… Lady … dance pop    2010   119    92    70    -4     8    71
+ 2     7 Dynamite   Taio … dance pop    2010   120    78    75    -4     4    82
+ 3    14 Telephone  Lady … dance pop    2010   122    83    83    -6    11    71
+ 4    15 Like A G6  Far E… dance pop    2010   125    84    44    -8    12    78
+ 5    19 Alejandro  Lady … dance pop    2010    99    80    63    -7    36    37
+ 6    20 Your Love… Kesha  dance pop    2010   120    61    83    -4     9    76
+ 7    21 Meet Me H… The B… dance pop    2010   130    63    80    -7    32    40
+ 8    22 Whataya W… Adam … australian…  2010   186    68    44    -5     6    45
+ 9    23 Take It O… Kesha  dance pop    2010   125    68    73    -5     9    74
+10    24 Misery     Maroo… pop          2010   103    81    70    -5    22    73
+# ℹ 140 more rows
+# ℹ 4 more variables: dur &lt;dbl&gt;, acous &lt;dbl&gt;, spch &lt;dbl&gt;, pop &lt;dbl&gt;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This doesn't really filter anything down for us, due to the acous column (Some songs may not be using acoustic sounds)</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>raw_data <span class="sc">|&gt;</span> </span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">if_any</span>(<span class="fu">c</span>(nrgy, dnce, live, val, spch, pop), <span class="sc">~</span> . <span class="sc">&lt;=</span> <span class="dv">1</span> <span class="sc">|</span> . <span class="sc">&gt;=</span> <span class="dv">99</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 15
+   ...1 title artist `top genre`  year   bpm  nrgy  dnce    dB  live   val   dur
+  &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;       &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1    51 Hello Marti… big room     2010   128    98    67    -3    10    45   191
+2   139 Blow… P!nk   dance pop    2012   114    92    60    -3    25    75   256
+3   268 Not … Justi… dance pop    2014    86    73    59    -6    38    46   266
+4   363 L.A.… Fergie dance pop    2015   202    39    48    -8    26    27   193
+5   443 Mill… Adele  british so…  2016     0     0     0   -60     0     0   227
+6   573 Memo… Maroo… pop          2019    91    32    76    -7     8    57   189
+# ℹ 3 more variables: acous &lt;dbl&gt;, spch &lt;dbl&gt;, pop &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<p>We can see a glaringly obvious incorrect entry. Million Years Ago by Adele apparently has no bpm, energy, danceability, etc. while also having a dB value of -60 (Significantly lower than any other song). Just to make sure we can go ahead and listen to the song on Spotify. The song starts with some vocals so a spch value of 0 makes zero sense! We can definitely go ahead and remove this in the next section</p>
+</section>
+<section id="data-cleaning" class="level2">
+<h2 class="anchored" data-anchor-id="data-cleaning"><strong>Data Cleaning</strong></h2>
+<p>Lets quickly get rid of the index column as its redundant, remove the incorrect row of data we saw previously, change year to a character format since we won’t be doing math on it, and I’m going to format the column titles so that they follow general R column formatting (Such as replacing whitespace with underscores).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> raw_data <span class="sc">|&gt;</span> </span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="st">`</span><span class="at">...1</span><span class="st">`</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(title <span class="sc">!=</span> <span class="st">"Million Years Ago"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">as.character</span>(year)) <span class="sc">|&gt;</span> </span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">top_genre =</span> <span class="st">`</span><span class="at">top genre</span><span class="st">`</span>,</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">energy =</span> nrgy,</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">dance =</span> dnce,</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">speech =</span> spch</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Lets get to exploring our data</p>
+</section>
+<section id="exploratory-data-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="exploratory-data-analysis"><strong>Exploratory Data Analysis</strong></h2>
+<p>What should we look at? We have many different options here and you may well want to explore something else than what I will. When brainstorming I came up with 3 questions we may want to look at:</p>
+<ol type="1">
+<li><p>Does the duration of a song impact its popularity?</p></li>
+<li><p>What are the most popular genres of song for each year?</p></li>
+<li><p>Which variables are most closely correlated? For example, Is BPM related to Danceability and the Energy of a song as you might expect?</p></li>
+</ol>
+</section>
+<section id="question-1" class="level2">
+<h2 class="anchored" data-anchor-id="question-1"><strong>Question 1</strong></h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>data <span class="sc">|&gt;</span> </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> dur, <span class="at">y =</span> pop)) <span class="sc">+</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="spotify_files/figure-html/exploratory-analysis-q1-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># There doesn't appear to be much correlation between the two. Let's create a bar plot where duration and popularity are both binned for a different perspective.</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>dbreaks <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">150</span>, <span class="dv">180</span>, <span class="dv">240</span>, <span class="dv">300</span>, <span class="dv">480</span>)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>pbreaks <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">100</span>, <span class="dv">80</span>, <span class="dv">60</span>, <span class="dv">40</span>, <span class="dv">20</span>, <span class="dv">0</span>)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>data <span class="sc">|&gt;</span> </span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="at">dur_bin =</span> <span class="fu">cut</span>(dur, dbreaks)) <span class="sc">|&gt;</span> </span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">avg_pop =</span> <span class="fu">round</span>(<span class="fu">mean</span>(pop)),</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">n =</span> <span class="fu">n</span>()</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> dur_bin, <span class="at">y =</span> avg_pop)) <span class="sc">+</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Duration Binned (Seconds)"</span>, <span class="at">y =</span> <span class="st">"Average Popularity"</span>) <span class="sc">+</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="spotify_files/figure-html/exploratory-analysis-q1-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># We can maybe see some sort of correlation here. The longer a song is the less popular it is. Lets expand on our first graph to include a regression line through our points.</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>data <span class="sc">|&gt;</span> </span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> dur, <span class="at">y =</span> pop)) <span class="sc">+</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="spotify_files/figure-html/exploratory-analysis-q1-3.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Here we can see some potential negative correlation between duration and popularity. Finally lets look at a linear model using `lm`</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>pop_dur_lmodel <span class="ot">&lt;-</span> <span class="fu">lm</span>(pop <span class="sc">~</span> dur, <span class="at">data =</span> data)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pop_dur_lmodel)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = pop ~ dur, data = data)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-68.119  -6.860   2.534   9.614  30.793 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 76.55534    3.85503  19.859  &lt; 2e-16 ***
+dur         -0.04417    0.01696  -2.604  0.00945 ** 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 14.21 on 600 degrees of freedom
+Multiple R-squared:  0.01117,   Adjusted R-squared:  0.009526 
+F-statistic:  6.78 on 1 and 600 DF,  p-value: 0.009446</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># So for every unit increase in duration (e.g. an additional second) we can expect popularity to fall by 0.044 on average (3 d.p.). This is statistically significant to a strong degree (The probability that the results we've seen are due to chance are less than 1%)</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>correlation_value <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">cor</span>(data<span class="sc">$</span>pop, data<span class="sc">$</span>dur), <span class="dv">4</span>)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">"Correlation coefficient:"</span>, correlation_value))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Correlation coefficient: -0.1057"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># However, we can see that this is a very negligible negative correlation</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Overall we should consider a variety of things. We’ve seen that our results from the linear model are statistically significant, however based off the correlation value -0.1057, are our results practically significant given such a low value?</p>
+<p>I would argue that they are. While shorter songs are only slightly more popular than longer ones, this will still be an important factor for labels to consider. The music industry is a multi-billion one after all, so any increase in popularity of a song will lead to a big increase in revenue. So to answer our initial question, “Does the duration of a song impact its popularity?” - Yes, both statistically speaking and in practical terms.</p>
+</section>
+<section id="question-2" class="level2">
+<h2 class="anchored" data-anchor-id="question-2"><strong>Question 2</strong></h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>ytg_pop_data <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span> </span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(year, top_genre) <span class="sc">|&gt;</span> </span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">avg_pop =</span> <span class="fu">mean</span>(pop),</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">n =</span> <span class="fu">n</span>(),</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span> </span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">relocate</span>(year, top_genre, avg_pop, n)</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>ytg_pop_data</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 147 × 4
+   year  top_genre       avg_pop     n
+   &lt;chr&gt; &lt;chr&gt;             &lt;dbl&gt; &lt;int&gt;
+ 1 2010  art pop            58       1
+ 2 2010  atl hip hop        57.7     3
+ 3 2010  australian pop     62.5     2
+ 4 2010  barbadian pop      65       2
+ 5 2010  big room            0       1
+ 6 2010  canadian pop       77       1
+ 7 2010  colombian pop      56       1
+ 8 2010  dance pop          65.1    31
+ 9 2010  detroit hip hop    82       1
+10 2010  hip pop            65       3
+# ℹ 137 more rows</code></pre>
+</div>
+</div>
+<p>Looking over this table presents some interesting questions. Firstly, what do we really mean by “most popular genres of song for each year”? We could consider two angles:</p>
+<ol type="1">
+<li>Should we define “popular” genres by how high they are based off the <code>pop</code> variable?</li>
+<li>Or should we define popularity by how many songs of a particular genre appear in our data? (i.e.&nbsp;how high the <code>n</code> value is)</li>
+</ol>
+<p>Lets say we consider angle #1. Then “neo mellow” would be considered the most “popular” genre due to its <code>avg_pop</code> score of 83. But this only appears a single time in our list so that seems a little misleading considering that while “dance pop” only has an <code>avg_pop</code> score of 65.0645161, it appears a total of 31 times which in my eyes indicates that <code>"dance pop"</code> is a much more popular genre in 2010. I say we should consider angle #2.</p>
+<p>However there is now another question we should ask before continuing. Should we merge similar genres? For example should “detroit hip hop” and “hip hop” be considered into the same genre for the sake of our analysis? It would be useful as there are a lot of genres with a very low count but if you were to pool all the similar genres together this count would be bigger. I think that we shouldn’t, but this is really down to personal opinion if you think certain genres sound very similar in sound. However… consider the below plot</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>ytg_pop_data <span class="sc">|&gt;</span> </span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> n, <span class="at">colour =</span> top_genre)) <span class="sc">+</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="spotify_files/figure-html/exploratory-analysis-q2-overloaded-legend-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>We can see that our refusal to merge similar genres together makes our legend an absolute mess. It’s really hard to distinguish between more than 7 or so colours i.e.&nbsp;7 or so genres. Despite this mess, it seems like there is a genre that really stands out in terms of popularity. Maybe we could merge similar genres together, choose a different way of representing this data or remove genres with a low amount of entries for each year. Let’s try the latter approach</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>ytg_pop_data <span class="sc">|&gt;</span> </span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(n <span class="sc">&gt;=</span> <span class="dv">4</span>) <span class="sc">|&gt;</span> <span class="co"># Drop genres that dont appear at least 4 times</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> n, <span class="at">fill =</span> top_genre)) <span class="sc">+</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>,</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>           <span class="at">position =</span> <span class="st">"dodge"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="spotify_files/figure-html/exploratory-analysis-q2-different-approach-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>This is much nicer. We can see that “dance pop” dominates pretty much every year except 2019, but regardless “pop” is still the most dominant genre. In fact the majority of these entries are related to “pop” apart from “boy band” which makes a short appearance in 2013 (One Direction anyone…?) and “neo mellow” which again makes a short appearance in 2014. Some years may only have two or even one entry due to the rest of the genres not being popular enough.</p>
+<p>To wrap up question 2, there is a multitude of different approaches you can take to answer the question more effectively. However it appears that it’ll be a case of redundancy, as its glaringly evident that “dance pop” is the dominant genre for each year, expect in 2019 in which “pop” is the most popular overall.</p>
+</section>
+<section id="question-3" class="level2">
+<h2 class="anchored" data-anchor-id="question-3"><strong>Question 3</strong></h2>
+<p>Lets take a look at the correlation values between all our numeric variables of interest</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>corr_data <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span> </span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">where</span>(is.numeric)) <span class="co"># Select only numeric columns</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>corr_matrix <span class="ot">&lt;-</span> <span class="fu">cor</span>(corr_data)</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="fu">corrplot</span>(corr_matrix)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="spotify_files/figure-html/exploratory-analysis-q3-correlation-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>We can see some interesting relationships here.</p>
+<p>For each unit increase in decibel levels, the “energy” of the song increases by one point. (Note that the decibel values range from -2:-15. A more negative value represents a quieter sound while a higher negative value represents a louder sound. The reason for this is because the decibel levels are being recorded on a logarithmic scale). So there is a relatively strong correlation that the louder a song is the more energetic it is. Similarly there is a small positive correlation between “loudness” of a song and its valence (i.e.&nbsp;the positive mood of a song) as well as a small negative correlation with the song’s “acousticness”.</p>
+<p>These all seem relatively expected so far, although bpm doesn’t have any strong correlations with any other variables to my surprise. Some other things are a positive relationship between energy and valence, strong negative correlation between energy and acousticness. Also, the more danceable a song is the higher its valence.</p>
+<p>Overall we see an interesting picture. Generally speaking, the louder a song is, the more positive it is in terms of mood, and there is much less acoustiness. The song is also likely to be considered more danceable due to valence’s relationship toward danceability. The rest of these correlations don’t seem to be very strong.</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
